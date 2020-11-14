@@ -15,22 +15,30 @@
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.0.0",
     "core-js": "^3.6.5",
-    "nuxt": "^2.14.6"
+    "nuxt": "^2.14.6",
+    "v-click-outside": "^3.1.2"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-regular-svg-icons": "^5.15.1",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@nuxt/types": "^2.14.6",
     "@nuxt/typescript-build": "^2.0.3",
     "@nuxtjs/eslint-config": "^4.0.0",
+    "@nuxtjs/fontawesome": "^1.1.2",
     "@nuxtjs/storybook": "^3.1.0",
     "@nuxtjs/tailwindcss": "^3.1.0",
     "@storybook/addon-a11y": "^6.0.28",
     "@storybook/addon-storysource": "^6.0.28",
+    "@tailwindcss/typography": "^0.2.0",
     "@vue/test-utils": "^1.1.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^26.5.0",
     "eslint": "^7.13.0",
     "eslint-config-kilian": "^1.0.0",
     "jest": "^26.5.0",
+    "node-sass": "^5.0.0",
+    "sass-loader": "^10.1.0",
     "ts-jest": "^26.4.1",
     "vue-jest": "^3.0.4"
   }

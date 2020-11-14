@@ -1,6 +1,10 @@
+import tailwindTypography from '@tailwindcss/typography';
+import { faIcons } from './icons.config';
+
 export default {
     target: 'static',
     srcDir: 'src/',
+    globalName: 'nuxt',
     head: {
         title: 'template-nuxt',
         meta: [
@@ -16,7 +20,10 @@ export default {
         ],
     },
     css: [],
-    plugins: [],
+    plugins: [
+        '~plugins/filters.js',
+        '~plugins/click-outside.js',
+    ],
     components: {
         components: [
             {
@@ -31,7 +38,50 @@ export default {
     buildModules: [
         '@nuxt/typescript-build',
         '@nuxtjs/tailwindcss',
+        '@nuxtjs/fontawesome',
     ],
     modules: [],
-    build: {},
+    build: {
+        analyze: false, // npm run build --analyze
+        html: {
+            minify: {
+                collapseBooleanAttributes: true,
+                decodeEntities: true,
+                minifyCSS: true,
+                minifyJS: true,
+                processConditionalComments: true,
+                removeEmptyAttributes: true,
+                removeRedundantAttributes: true,
+                trimCustomFragments: true,
+                useShortDoctype: true,
+                collapseWhitespace: true,
+            },
+        },
+    },
+    tailwindcss: {
+        config: {
+            future: {
+                removeDeprecatedGapUtilities: true,
+                purgeLayersByDefault: true,
+                defaultLineHeights: true,
+                standardFontWeights: true,
+            },
+        },
+        theme: {
+            extend: { },
+        },
+        variants: {
+            transitionProperty: [ 'responsive', 'hover', 'focus' ],
+        },
+        plugins: [ tailwindTypography ],
+    },
+    fontawesome: {
+        icons: faIcons,
+    },
+    storybook: {
+        addons: [
+            '@storybook/addon-a11y',
+            '@storybook/addon-storysource',
+        ],
+    },
 };
