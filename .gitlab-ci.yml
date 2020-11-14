@@ -25,8 +25,10 @@ cache:
 test:
   image: node:lts-alpine
   stage: verify
+  before_script:
+    - npm set progress=false
   script:
-    - npm install
+    - npm install --prefer-offline --no-audit --progress=false
     - npm run test
   only:
     changes:
@@ -38,7 +40,7 @@ lint:
   image: node:lts-alpine
   stage: verify
   script:
-    - npm install
+    - npm install --prefer-offline --no-audit --progress=false
     - npm run lint
   only:
     changes:
