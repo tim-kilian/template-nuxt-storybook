@@ -1,0 +1,136 @@
+image: docker:latest
+
+stages:
+  - verify
+  - build
+  - release
+  - review
+  - stage
+  - deploy
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE_TAG_TEST: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  IMAGE_TAG_RELEASE: $CI_REGISTRY_IMAGE:latest
+
+services:
+  - docker:19.03.12-dind
+
+cache:
+  key: $CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG
+  paths:
+    - node_modules/
+
+test:
+  image: node:lts-alpine
+  stage: verify
+  script:
+    - npm install
+    - npm run test
+
+lint:
+  image: node:lts-alpine
+  stage: verify
+  script:
+    - npm install
+    - npm run lint
+
+build_image:
+  stage: build
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build --pull --cache-from $CI_COMMIT_REF_SLUG -t $IMAGE_TAG_TEST .
+    - docker push $IMAGE_TAG_TEST
+  only:
+    changes:
+      - Dockerfile
+      - src/**/*
+      - package.json
+      - nginx.conf
+      - nuxt.config.js
+      - icons.config.js
+#  rules:
+#    - when: delayed
+#      start_in: '1 hour'
+
+release_image:
+  stage: release
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $IMAGE_TAG_TEST
+    - docker tag $IMAGE_TAG_TEST $IMAGE_TAG_RELEASE
+    - docker push $IMAGE_TAG_RELEASE
+  only:
+    - master
+
+deploy_review:
+  stage: review
+  image: alpine/helm:latest
+  script:
+    - helm upgrade
+      --install $CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG
+      --namespace $KUBE_NAMESPACE
+      --kubeconfig $KUBECONFIG
+      --set host=$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG.$CI_PROJECT_NAMESPACE.$KUBE_INGRESS_BASE_DOMAIN
+      --set imageCredentials.registry=$CI_REGISTRY
+      --set imageCredentials.username=$CI_REGISTRY_USER
+      --set imageCredentials.password=$CI_REGISTRY_PASSWORD
+      --set image.repository=$CI_REGISTRY_IMAGE
+      --set image.tag=$CI_COMMIT_REF_SLUG
+      --set service.targetPort=80
+      chart
+  environment:
+    name: review
+    url: https://$CI_PROJECT_NAME-review-$CI_COMMIT_REF_SLUG.$CI_PROJECT_NAMESPACE.$KUBE_INGRESS_BASE_DOMAIN
+  except:
+    - master
+
+deploy_stage:
+  stage: stage
+  image: alpine/helm:latest
+  script:
+    - helm upgrade
+      --install $CI_PROJECT_NAME-next
+      --namespace $KUBE_NAMESPACE
+      --kubeconfig $KUBECONFIG
+      --set host=$CI_PROJECT_NAME-next.$CI_PROJECT_NAMESPACE.$KUBE_INGRESS_BASE_DOMAIN
+      --set imageCredentials.registry=$CI_REGISTRY
+      --set imageCredentials.username=$CI_REGISTRY_USER
+      --set imageCredentials.password=$CI_REGISTRY_PASSWORD
+      --set image.repository=$CI_REGISTRY_IMAGE
+      --set image.tag=$CI_COMMIT_REF_SLUG
+      --set service.targetPort=80
+      chart
+  environment:
+    name: stage
+    url: https://$CI_PROJECT_NAME-next.$CI_PROJECT_NAMESPACE.$KUBE_INGRESS_BASE_DOMAIN
+  only:
+    - master
+
+deploy_production:
+  stage: deploy
+  image: alpine/helm:latest
+  script:
+    - helm upgrade
+      --install $CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG
+      --namespace $KUBE_NAMESPACE
+      --kubeconfig $KUBECONFIG
+      --set host=$ENNIRONMENT_HOST
+      --set imageCredentials.registry=$CI_REGISTRY
+      --set imageCredentials.username=$CI_REGISTRY_USER
+      --set imageCredentials.password=$CI_REGISTRY_PASSWORD
+      --set image.repository=$CI_REGISTRY_IMAGE
+      --set image.tag=$CI_COMMIT_REF_SLUG
+      --set service.targetPort=80
+      chart
+  environment:
+    name: production
+    url: https://$CI_PROJECT_NAME.$CI_PROJECT_NAMESPACE.$KUBE_INGRESS_BASE_DOMAIN
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: manual
+
