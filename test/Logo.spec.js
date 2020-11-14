@@ -1,4 +1,4 @@
-import Logo from '@/components/Logo.vue';
+import Logo from '@/components/assets/Logo.vue';
 import { mount } from '@vue/test-utils';
 
 describe('Logo', () => {
