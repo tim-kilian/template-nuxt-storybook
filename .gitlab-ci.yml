@@ -84,7 +84,7 @@ deploy_review:
       --set service.targetPort=80
       chart
   environment:
-    name: review
+    name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_PROJECT_NAME-review-$CI_COMMIT_REF_SLUG.$CI_PROJECT_NAMESPACE.$KUBE_INGRESS_BASE_DOMAIN
   except:
     - master
