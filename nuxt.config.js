@@ -40,7 +40,9 @@ export default {
         '@nuxtjs/tailwindcss',
         '@nuxtjs/fontawesome',
     ],
-    modules: [],
+    modules: [
+        'nuxt-i18n',
+    ],
     build: {
         analyze: false, // npm run build --analyze
         html: {
@@ -83,5 +85,44 @@ export default {
             '@storybook/addon-a11y',
             '@storybook/addon-storysource',
         ],
+    },
+    i18n: {
+        vueI18nLoader: true,
+        defaultLocale: 'de',
+        differentDomains: false,
+        locales: [
+            {
+                code: 'de',
+                country: 'de',
+                iso: 'de-DE',
+                name: 'Deutschland',
+                file: 'de.js',
+                // domain: '.de',
+            },
+            {
+                code: 'en',
+                country: 'gb',
+                iso: 'en-GB',
+                name: 'United Kingdom',
+                file: 'en.js',
+                // domain: '.co.uk',
+            },
+            {
+                code: 'pl',
+                country: 'pl',
+                iso: 'pl-PL',
+                name: 'Polska',
+                file: 'pl.js',
+                // domain: '.pl',
+            },
+        ],
+        // seo: true,
+        lazy: true,
+        langDir: 'lang/',
+        detectBrowserLanguage: {
+            useCookie: true,
+            cookieKey: 'i18n',
+            onlyOnRoot: true,
+        },
     },
 };
