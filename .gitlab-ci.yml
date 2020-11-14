@@ -28,6 +28,11 @@ test:
   script:
     - npm install
     - npm run test
+  only:
+    changes:
+      - src/**/*
+      - test/**/*
+      - package.json
 
 lint:
   image: node:lts-alpine
@@ -35,6 +40,10 @@ lint:
   script:
     - npm install
     - npm run lint
+  only:
+    changes:
+      - src/**/*
+      - test/**/*
 
 build_image:
   stage: build

@@ -10,7 +10,7 @@
     "start": "nuxt-ts start",
     "generate": "nuxt-ts generate",
     "test": "jest",
-    "lint": "eslint src --ext .js,.vue"
+    "lint": "eslint src test --ext .js,.vue"
   },
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.0.0",
