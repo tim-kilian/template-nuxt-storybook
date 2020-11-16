@@ -85,6 +85,18 @@ export default {
             '@storybook/addon-a11y',
             '@storybook/addon-storysource',
         ],
+        parameters: {
+            layout: 'fullscreen',
+            backgrounds: {
+                default: 'white',
+                values: [
+                    { name: 'black', value: '#000' },
+                    { name: 'dark', value: '#333' },
+                    { name: 'light', value: '#e9e9e9' },
+                    { name: 'white', value: '#fff' },
+                ],
+            },
+        },
     },
     i18n: {
         vueI18nLoader: true,
