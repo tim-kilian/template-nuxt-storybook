@@ -1,5 +1,7 @@
 # template-nuxt
 
+Copy of the Nuxt template from my [GitLab](https://git.kilian.me/tkilian/template-nuxt).
+
 ## Build Setup
 
 ```bash
